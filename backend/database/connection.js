@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import colors from "colors"
 
 export const connection = () => {
   mongoose
@@ -6,7 +7,7 @@ export const connection = () => {
       dbName: "MERN_AUCTION_PLATFORM",
     })
     .then(() => {
-      console.log("Connected to database.");
+      console.log("Connected to database.".bgCyan.italic.bold);
     })
     .catch((err) => {
       console.log(`Some error occured while connection to database: ${err}`);
