@@ -105,17 +105,43 @@ export const login = catchAsyncErrors(async (req, res, next) => {
     return next(new ErrorHandler("Please fill full form."));
   }
   const user = await User.findOne({ email }).select("+password");
-  if(!user){
+  if (!user) {
     return next(new ErrorHandler("Invalid credentials.", 400));
   }
   const isPasswordMatch = await user.comparePassword(password);
-  if(!isPasswordMatch){
-     return next(new ErrorHandler("Invalid credentials.", 400));
+  if (!isPasswordMatch) {
+    return next(new ErrorHandler("Invalid credentials.", 400));
   }
   generateToken(user, "Login successfully.", 200, res);
-
 });
 
-export const getProfile = catchAsyncErrors(async (req, res, next) => {});
-export const logout = catchAsyncErrors(async (req, res, next) => {});
-export const fetchLeaderboard = catchAsyncErrors(async (req, res, next) => {});
+export const getProfile = catchAsyncErrors(async (req, res, next) => {
+  const user = req.user;
+  res.status(200).json({
+    success: true,
+    user,
+  });
+});
+export const logout = catchAsyncErrors(async (req, res, next) => {
+  res
+    .status(200)
+    .cookie("yandysToken", "", {
+      expires: new Date(Date.now()),
+      httpOnly: true,
+    })
+    .json({
+      success: true,
+      message: "Logout successfully.",
+    });
+});
+export const fetchLeaderboard = catchAsyncErrors(async (req, res, next) => {
+  const users = await User.find({ moneySpent: { $gt: 0 } });
+  const leaderboard = users.sort((a,b)=> b.moneySpent - a.moneySpent);
+
+  res.status(200).json({
+    success: true,
+    leaderboard,
+  })
+});
+
+
