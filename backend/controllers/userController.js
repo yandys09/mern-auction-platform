@@ -10,6 +10,7 @@ export const register = catchAsyncErrors(async (req, res, next) => {
   }
 
   const { profileImage } = req.files;
+
   const allowedFormats = ["image/png", "image/jpeg", "image/jpg", "image/webp"];
   if (!allowedFormats.includes(profileImage.mimetype)) {
     return next(new ErrorHandler("File format not supported.", 400));
@@ -51,6 +52,7 @@ export const register = catchAsyncErrors(async (req, res, next) => {
   if (isRegistered) {
     return next(new ErrorHandler("User already registered.", 400));
   }
+  
   const cloudinaryResponse = await cloudinary.uploader.upload(
     profileImage.tempFilePath,
     {
